@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+}
+
+#new_game {
+    border: 1px solid gray;
+    border-radius: 3px;
+    width: 200px;
+    height: 50px;
+    font-size: 12px;
+    text-align: center;
+    background-color: #CCCCCC;
+}
+
+#new_game:hover{
+    background-color: #999999;
+    cursor: pointer;
+}
+
+#timer{
+    width: 200px;
+    height: 50px;
+    font-size: 12px;
+    text-align: center;
+}
