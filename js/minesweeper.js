@@ -73,8 +73,8 @@ window.oncontextmenu = function (e) {
     }
 
     if (!inRClickedBoxes[0]) {
-        if (rightClicks < 10) {
-            rightClicks++;
+        if (rClickedBoxes.length < 10) {
+
             var n = rClickedBoxes.length;
             rClickedBoxes[n] = [];
             rClickedBoxes[n][0] = rClickedX;
@@ -89,7 +89,7 @@ window.oncontextmenu = function (e) {
         }
     } else {
         rClickedBoxes.splice(inRClickedBoxes[1], 1);
-        rightClicks--;
+
     }
 
     drawCanvas();
@@ -224,6 +224,27 @@ function clickPass(x, y) {
     }
 
 
+
+
+    /*for(var i = 0 ; i< 10 ; i++){
+
+// not adding duplicate bombs
+        while(true){
+            x = Math.floor ( Math.random()*10);
+            y = Math.floor ( Math.random()*10);
+
+            if( bombsFound[x][y] != -2){
+                bombsFound[x][y] = -2;   // -2 means bomb is here in array
+                bombs[i] = [x , y];
+                break;
+            }
+            console.log("Almost added a duplicate!")
+        }
+
+    }﻿*/
+
+
+
     if (numOfBombsAround === 0) {
         for (i in boxesToCheck) {
             if (x + boxesToCheck[i][0] >= 0 && x + boxesToCheck[i][0] <= 9 && y + boxesToCheck[i][1] >= 0 && y + boxesToCheck[i][1] <= 9) {
@@ -257,7 +278,8 @@ function checkBomb(i, x, y) {
 
 
 function lose() {
-
+    alert('You lost, idiot');
+    newGame();
 }
 
 function win() {
