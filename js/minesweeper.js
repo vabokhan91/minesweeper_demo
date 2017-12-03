@@ -1,190 +1,29 @@
-var s = {
-    rows: 10,
-    cols: 10,
-    width: 30,
-    height: 30
-};
-
-var c;
-
-var bombs = [];
-
-var clickedBoxes = [];
-
-window.onload = function () {
-    var canvas = document.getElementById('g_canvas');
-    c = canvas.getContext('2d');
+function startGame() {
+    var ctx = initContext();
+    init(ctx);
     timer();
-    init();
 };
 
-var mX;
-var mY;
-var clickedX;
-var clickedY;
-window.onclick = function (e) {
-    mX = e.pageX;
-    mY = e.pageY;
-
-    if (Math.floor(mX / s.width) < s.cols && Math.floor(mY / s.height) < s.rows) {
-        clickedX = Math.floor(mX / s.width);
-        clickedY = Math.floor(mY / s.height);
+function initContext() {
+    document.getElementById('g_canvas').style.visibility = "visible";
+    var canvas = document.getElementById('g_canvas');
+    var ctx = canvas.getContext('2d');
+    var numOfBombs = parseInt(document.getElementById('number_of_bombs').value);
+    if(numOfBombs < 5) {
+        numOfBombs = 8;
     }
-
-    var clickedBomb = false;
-
-    for (var i = 0; i < 10; i++) {
-        if (clickedX === bombs[i][0] && clickedY === bombs[i][1]) {
-            clickedBomb = true;
-            lose();
-        }
-    }
-
-    if (!clickedBomb  && mX < s.rows * s.width && mY < s.cols * s.height) {
-        var totalClicked = clickedBoxes.length + rClickedBoxes.length;
-        if (totalClicked === 100) {
-            win();
-        }
-        clickPass(clickedX, clickedY);
-    }
-};
-
-var rClickedX;
-var rClickedY;
-var rClickedBoxes = [];
-var rightClicks = 0;
-window.oncontextmenu = function (e) {
-    e.preventDefault();
-    mX = e.pageX;
-    mY = e.pageY;
-
-
-    if (Math.floor(mX / s.width) < s.cols && Math.floor(mY / s.height) < s.rows) {
-        rClickedX = Math.floor(mX / s.width);
-        rClickedY = Math.floor(mY / s.height);
-    }
-
-    var inRClickedBoxes = [false, 0];
-
-    for (i in rClickedBoxes) {
-        if (rClickedBoxes[i][0] === rClickedX && rClickedBoxes[i][1] === rClickedY) {
-            inRClickedBoxes = [true, i];
-        }
-    }
-
-    if (!inRClickedBoxes[0]) {
-        if (rClickedBoxes.length < 10) {
-
-            var n = rClickedBoxes.length;
-            rClickedBoxes[n] = [];
-            rClickedBoxes[n][0] = rClickedX;
-            rClickedBoxes[n][1] = rClickedY;
-
-            var totalClicked = rClickedBoxes.length + clickedBoxes.length;
-            if(totalClicked === 100) {
-                win();
-            }
-
-
-        }
-    } else {
-        rClickedBoxes.splice(inRClickedBoxes[1], 1);
-
-    }
-
-    drawCanvas();
-
-};
-
-var box;
-var num;
-var zero;
-var flag;
-
-function init() {
-    box = new Image();
-    num = new Image();
-    zero = new Image();
-    flag = new Image();
-    box.src = "box.png";
-    num.src = "num.png";
-    zero.src = "zero.png";
-    flag.src = "logo.png";
-
-
-    for (var i = 0; i < 10; i++) {
-        bombs[i] = [
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10)
-        ]
-    }
-
-    drawCanvas();
-}
-
-var time = 0;
-
-function timer() {
-    setTimeout(function () {
-        var timerVal = document.getElementById('timer');
-        time++;
-        timerVal.innerHTML = time;
-        timer();
-    }, 1000);
-
-}
-
-function drawCanvas() {
-    c.clearRect(0, 0, 400, 400);
-
-    for (var i = 0; i < s.rows; i++) {
-        for (var n = 0; n < s.cols; n++) {
-            var x = n * s.width;
-            var y = i * s.height;
-
-            var beenClicked = [0, false];
-            if (clickedBoxes.length > 0) {
-                for (var k = 0; k < clickedBoxes.length; k++) {
-                    if (clickedBoxes[k][0] === n && clickedBoxes[k][1] === i) {
-                        beenClicked = [k, true];
-                    }
-                }
-            }
-
-            if (beenClicked[1]) {
-                if (clickedBoxes[(beenClicked[0])][2] > 0) {
-                    c.drawImage(num, x, y);
-                } else {
-                    c.drawImage(zero, x, y);
-                }
-            } else {
-                var rBeenClicked = [0, false];
-                if (rClickedBoxes.length > 0) {
-                    for (var k = 0; k < rClickedBoxes.length; k++) {
-                        if (rClickedBoxes[k][0] === n && rClickedBoxes[k][1] === i) {
-                            rBeenClicked = [k, true];
-                        }
-                    }
-                }
-
-                if (rBeenClicked[1]) {
-                    c.drawImage(flag, x, y);
-                } else {
-                    c.drawImage(box, x, y);
-                }
-            }
-        }
-    }
-    for (i in clickedBoxes) {
-        if (clickedBoxes[i][2] > 0) {
-            c.fillText(clickedBoxes[i][2], clickedBoxes[i][0] * s.width + s.width / 2, clickedBoxes[i][1] * s.height + s.height / 2);
-        }
-
-    }
-}
-
-function clickPass(x, y) {
-    var boxesToCheck = [
+    ctx.numOfBombs = numOfBombs;
+    ctx.rows = numOfBombs - 2;
+    ctx.cols = numOfBombs - 2;
+    ctx.cellSize = 30;
+    ctx.time = 0;
+    ctx.timeout = 0;
+    ctx.width = ctx.rows * ctx.cellSize;
+    ctx.height = ctx.cols * ctx.cellSize;
+    ctx.clickedBoxes = [];
+    ctx.rClickedBoxes = [];
+    ctx.bombs = [];
+    ctx.boxesToCheck = [
         [-1, -1],
         [0, -1],
         [1, -1],
@@ -194,66 +33,228 @@ function clickPass(x, y) {
         [-1, 1],
         [-1, 0],
     ];
+    var box = document.getElementById('box');
+    var num = document.getElementById('num');
+    var zero = document.getElementById('zero');
+    var flag = document.getElementById('flag');
+    ctx.box = box;
+    ctx.num = num;
+    ctx.zero = zero;
+    ctx.flag = flag;
+    canvas.width = ctx.width;
+    canvas.height = ctx.height;
+    canvas.addEventListener('click', controller);
+    return ctx;
+}
 
+function getContext() {
+    var canvas = getCanvas();
+    return canvas.getContext('2d');
+}
+
+function getCanvas() {
+    return document.getElementById('g_canvas');
+}
+
+function controller(e) {
+
+    var ctx = getContext();
+    var canvas = getCanvas();
+    var rect = canvas.getBoundingClientRect();
+    ctx.mX = e.clientX - rect.left;
+    ctx.mY = e.clientY - rect.top;
+    ctx.clickedX = 0;
+    ctx.clickedY = 0;
+
+    if (Math.floor(ctx.mX / ctx.cellSize) < ctx.cols && Math.floor(ctx.mY / ctx.cellSize) < ctx.rows) {
+        ctx.clickedX = Math.floor(ctx.mX / ctx.cellSize);
+        ctx.clickedY = Math.floor(ctx.mY / ctx.cellSize);
+    }
+
+    var clickedBomb = false;
+
+    for (var i = 0; i < ctx.numOfBombs; i++) {
+        if (ctx.clickedX === ctx.bombs[i][0] && ctx.clickedY === ctx.bombs[i][1]) {
+            clickedBomb = true;
+            lose();
+        }
+    }
+
+    if (!clickedBomb  && ctx.mX < ctx.rows * ctx.cellSize && ctx.mY < ctx.cols * ctx.cellSize) {
+        var totalClicked = ctx.clickedBoxes.length + ctx.rClickedBoxes.length;
+        if (totalClicked === ctx.rows * ctx.cols) {
+            win();
+        }
+        clickPass(ctx.clickedX, ctx.clickedY);
+    }
+};
+
+
+window.oncontextmenu = function (e) {
+    e.preventDefault();
+    var ctx = getContext();
+    var canvas = getCanvas();
+    var rect = canvas.getBoundingClientRect();
+    ctx.mX = e.clientX - rect.left;
+    ctx.mY = e.clientY - rect.top;
+
+    if (Math.floor(ctx.mX / ctx.cellSize) < ctx.cols && Math.floor(ctx.mY / ctx.cellSize) < ctx.rows) {
+        ctx.rClickedX = Math.floor(ctx.mX / ctx.cellSize);
+        ctx.rClickedY = Math.floor(ctx.mY / ctx.cellSize);
+    }
+
+    var inRClickedBoxes = [false, 0];
+
+    for (i in ctx.rClickedBoxes) {
+        if (ctx.rClickedBoxes[i][0] === ctx.rClickedX && ctx.rClickedBoxes[i][1] === ctx.rClickedY) {
+            inRClickedBoxes = [true, i];
+        }
+    }
+
+    if (!inRClickedBoxes[0]) {
+        if (ctx.rClickedBoxes.length < ctx.numOfBombs) {
+
+            var n = ctx.rClickedBoxes.length;
+            ctx.rClickedBoxes[n] = [];
+            ctx.rClickedBoxes[n][0] = ctx.rClickedX;
+            ctx.rClickedBoxes[n][1] = ctx.rClickedY;
+            var totalClicked = ctx.rClickedBoxes.length + ctx.clickedBoxes.length;
+            if(totalClicked === ctx.cols * ctx.rows) {
+                win();
+            }
+        }
+    } else {
+        ctx.rClickedBoxes.splice(inRClickedBoxes[1], 1);
+
+    }
+    drawCanvas(ctx);
+
+};
+
+
+function init(ctx) {
+    for (var i = 0; i < ctx.numOfBombs; i++) {
+        ctx.bombs[i] = [
+            Math.floor(Math.random() * ctx.cols),
+            Math.floor(Math.random() * ctx.rows)
+        ]
+    }
+    drawCanvas(ctx);
+}
+
+function timer() {
+    var ctx = getContext();
+    ctx.timeout = setTimeout(function () {
+        var ctx = getContext();
+        var timerVal = document.getElementById('timer');
+        var time = ctx.time;
+        time++;
+        ctx.time = time;
+        timerVal.innerHTML = time;
+        timer();
+    }, 1000);
+
+}
+
+function drawCanvas(ctx) {
+    ctx.clearRect(0, 0, ctx.width, ctx.height);
+
+    for (var i = 0; i < ctx.rows; i++) {
+        for (var n = 0; n < ctx.cols; n++) {
+            var x = n * ctx.cellSize;
+            var y = i * ctx.cellSize;
+
+            var beenClicked = [0, false];
+            if (ctx.clickedBoxes.length > 0) {
+                for (var k = 0; k < ctx.clickedBoxes.length; k++) {
+                    if (ctx.clickedBoxes[k][0] === n && ctx.clickedBoxes[k][1] === i) {
+                        beenClicked = [k, true];
+                    }
+                }
+            }
+
+            if (beenClicked[1]) {
+                if (ctx.clickedBoxes[(beenClicked[0])][2] > 0) {
+                    ctx.drawImage(ctx.num, x, y);
+                } else {
+                    ctx.drawImage(ctx.zero, x, y);
+                }
+            } else {
+                var rBeenClicked = [0, false];
+                if (ctx.rClickedBoxes.length > 0) {
+                    for (var k = 0; k < ctx.rClickedBoxes.length; k++) {
+                        if (ctx.rClickedBoxes[k][0] === n && ctx.rClickedBoxes[k][1] === i) {
+                            rBeenClicked = [k, true];
+                        }
+                    }
+                }
+
+                if (rBeenClicked[1]) {
+                    ctx.drawImage(ctx.flag, x, y);
+                } else {
+                    ctx.drawImage(ctx.box, x, y);
+                }
+            }
+        }
+    }
+    for (i in ctx.clickedBoxes) {
+        if (ctx.clickedBoxes[i][2] > 0) {
+            ctx.fillText(ctx.clickedBoxes[i][2], ctx.clickedBoxes[i][0] * ctx.cellSize + ctx.cellSize / 2, ctx.clickedBoxes[i][1] * ctx.cellSize + ctx.cellSize / 2);
+        }
+
+    }
+    if(ctx.rClickedBoxes.length > 0) {
+
+        var bombsRemaining = document.getElementById('bombs_remaining');
+        bombsRemaining.innerHTML = ctx.bombs.length - ctx.rClickedBoxes.length;
+    }else {
+        var bombsRemaining = document.getElementById('bombs_remaining');
+        bombsRemaining.innerHTML = ctx.bombs.length;
+    }
+
+}
+
+function clickPass(x, y) {
+    var ctx = getContext();
+    var boxesToCheck = ctx.boxesToCheck;
     var numOfBombsAround = 0;
 
     for (i in boxesToCheck) {
-        for (var n = 0; n < 10; n++) {
+        for (var n = 0; n < ctx.numOfBombs; n++) {
             if (checkBomb(n, x + boxesToCheck[i][0], y + boxesToCheck[i][1]) === true) {
                 numOfBombsAround++;
             }
         }
     }
 
-    for(k in rClickedBoxes) {
-        if(rClickedBoxes[k][0] === x && rClickedBoxes[k][1] ===y) {
-            rClickedBoxes.splice(k, 1);
+    for(k in ctx.rClickedBoxes) {
+        if(ctx.rClickedBoxes[k][0] === x && ctx.rClickedBoxes[k][1] ===y) {
+            ctx.rClickedBoxes.splice(k, 1);
         }
     }
 
     var clicked = false;
 
-    for(k in clickedBoxes) {
-        if(clickedBoxes[k][0] === x && clickedBoxes[k][1] === y) {
+    for(k in ctx.clickedBoxes) {
+        if(ctx.clickedBoxes[k][0] === x && ctx.clickedBoxes[k][1] === y) {
             clicked = true;
         }
     }
 
-    if(!clicked){
-        clickedBoxes[(clickedBoxes.length)] = [x, y, numOfBombsAround];
+    if(!clicked && x < ctx.rows && y < ctx.cols && y >=0 && x >= 0){
+        ctx.clickedBoxes[(ctx.clickedBoxes.length)] = [x, y, numOfBombsAround];
     }
-
-
-
-
-    /*for(var i = 0 ; i< 10 ; i++){
-
-// not adding duplicate bombs
-        while(true){
-            x = Math.floor ( Math.random()*10);
-            y = Math.floor ( Math.random()*10);
-
-            if( bombsFound[x][y] != -2){
-                bombsFound[x][y] = -2;   // -2 means bomb is here in array
-                bombs[i] = [x , y];
-                break;
-            }
-            console.log("Almost added a duplicate!")
-        }
-
-    }﻿*/
-
 
 
     if (numOfBombsAround === 0) {
         for (i in boxesToCheck) {
-            if (x + boxesToCheck[i][0] >= 0 && x + boxesToCheck[i][0] <= 9 && y + boxesToCheck[i][1] >= 0 && y + boxesToCheck[i][1] <= 9) {
+            if (x + boxesToCheck[i][0] >= 0 && x + boxesToCheck[i][0] < ctx.rows && y + boxesToCheck[i][1] >= 0 && y + boxesToCheck[i][1] < ctx.cols) {
                 var x1 = x + boxesToCheck[i][0];
                 var y1 = y + boxesToCheck[i][1];
 
                 var alreadyClicked = false;
-                for (n in clickedBoxes) {
-                    if (clickedBoxes[n][0] === x1 && clickedBoxes[n][1] === y1) {
+                for (n in ctx.clickedBoxes) {
+                    if (ctx.clickedBoxes[n][0] === x1 && ctx.clickedBoxes[n][1] === y1) {
                         alreadyClicked = true;
                     }
                 }
@@ -264,12 +265,13 @@ function clickPass(x, y) {
         }
     }
 
-    drawCanvas();
+    drawCanvas(ctx);
 
 }
 
 function checkBomb(i, x, y) {
-    if (bombs[i][0] === x && bombs[i][1] === y) {
+    var ctx = getContext();
+    if (ctx.bombs[i][0] === x && ctx.bombs[i][1] === y) {
         return true;
     } else {
         return false;
@@ -279,7 +281,7 @@ function checkBomb(i, x, y) {
 
 function lose() {
     alert('You lost, idiot');
-    newGame();
+    gameOver();
 }
 
 function win() {
@@ -287,11 +289,24 @@ function win() {
 
 }
 
-function newGame() {
-    bombs = [];
-    clickedBoxes = [];
-    rClickedBoxes = [];
-    rightClicks = 0;
-    time = 0;
-    init();
+function gameOver() {
+    document.getElementById("g_canvas").innerHTML = "";
+
+    for (var i = 0; i <= 10000; i++) {
+        clearTimeout(i);
+    }
+    var ctx = getContext();
+    clearTimeout(ctx.timeout);
+    ctx.timeout = 0;
+    ctx.bombs = [];
+    ctx.clickedBoxes = [];
+    ctx.rClickedBoxes = [];
+    ctx.rightClicks = 0;
+    ctx.time = 0;
 }
+
+function newGame() {
+    gameOver();
+    startGame();
+}
+

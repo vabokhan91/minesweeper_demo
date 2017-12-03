@@ -29,6 +29,36 @@ body {
 
 }
 
+.time-passed{
+
+}
+
 #controls{
     text-align: center;
 }
+
+.bomb_input{
+    margin-right: 50px;
+}
+
+.footer{
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.header{
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+#bombs_remaining {
+    margin-right: 100px;
+
+}
+span{
+    margin-right: 20px;
+}
+
+canvas {  }

@@ -1,30 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/minesweeper.js">
-
-
-    </script>
+    <script src="js/minesweeper.js"></script>
 
 </head>
 <body>
-<div id="game">
-<div id="game_canvas">
-    <canvas id="g_canvas" width="400" height="400"></canvas>
+<div style="display:none;">
+    <img id="box" src="image/box.png">
+    <img id="flag" src="image/logo.png">
+    <img id="num" src="image/num.png">
+    <img id="zero" src="image/zero.png">
 </div>
-<div id="controls">
-    <div id = "timer">
 
+
+
+<div class="container">
+
+    <div class="jumbotron">
+        Hello!! Meet the best game ever - MINESWEEPER!!!! Press 'New Game' to start game, specify number of mines (default is 10).
+    </div>
+    <div class="header">
+        <span>Bombs remaining:</span>
+        <div id="bombs_remaining">
+
+        </div>
+        <span>Time passed:</span>
+        <div id = "timer">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+
+        </div>
+        <div id="game_canvas" class="col-6">
+            <canvas id="g_canvas" style="visibility: hidden"></canvas>
+        </div>
+        <div class="col">
+
+        </div>
     </div>
 
-    <div id="new_game" onclick="newGame()">
-        New game
+    <div class="footer">
+        <div class="bomb_input">
+    Number of bombs:
+    <input type="text" id="number_of_bombs" value="10">
+        </div>
+    <input type="submit" onclick="newGame()" value=" New game" >
     </div>
 </div>
-</div>
-Number of bombs: 
-<input id="number_of_bombs" value=""/>
+
+
+
 
 </body>
 </html>
